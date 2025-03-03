@@ -47,6 +47,9 @@ Oskari - Code Structure and management
 
 2 weeks - Testing/polishing!
 
+**3/3/2025** -- Repo remade and template files are constructed
+Will was finally able to get some work done, and played around with the UI elements and button construction
+
 ## Structure
 ```mermaid
 graph TD
