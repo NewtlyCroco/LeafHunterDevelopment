@@ -28,16 +28,24 @@ Tampere University – LeafHunter Project
 
 **2/17/2025** -- Development Timeline and Steps
 **Internal Deadline April 30th!**
-We looked at a roughly sketched out the layout of our design, planned out buttons and discussed API data security and soforth!
+We looked at a roughly sketched out the layout of our design, planned out buttons and discussed API data security and soforth!    
+
 We looked into ngrok for network handling
+
 Plan for next week - 
+
 Will - UI static page with working buttons and logo
+
 Kian - Oauth and login page
+
 Oskari - Code Structure and management
+
 10 weeks left
-4 - UI
-4 - Backend
-2 - Testing/polishing!
+4 weeks - UI
+
+4 weeks - Backend
+
+2 weeks - Testing/polishing!
 
 ## Structure
 ```mermaid
