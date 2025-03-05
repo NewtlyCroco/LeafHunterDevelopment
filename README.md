@@ -50,6 +50,8 @@ Oskari - Code Structure and management
 **3/3/2025** -- Repo remade and template files are constructed
 Will was finally able to get some work done, and played around with the UI elements and button construction
 
+**3/5/2025** -- UI figuring out, standard code style established being camelCase, and deligated UI work, Kian is working on the login page and a super simple database backend, Will is going to work on basic button design, and espeically the camera button to take photos, and possibly a page for the user profile unconnected to the database for the moment.
+
 ## Structure
 ```mermaid
 graph TD
