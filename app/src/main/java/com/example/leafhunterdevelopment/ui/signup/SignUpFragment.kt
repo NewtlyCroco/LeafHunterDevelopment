@@ -27,17 +27,25 @@ class SignUpFragment : Fragment() {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // firebaseAuth = FirebaseAuth.getInstance()
+
+        // Button to change to sign in
         binding.textView.setOnClickListener {
             // Navigate to SignInFragment
             findNavController().navigate(R.id.signInFragment)
         }
 
+        // Sign up button listener
         binding.button.setOnClickListener {
+
+            // Get inputs
             val email = binding.emailEt.text.toString()
             val pass = binding.passET.text.toString()
             val confirmPass = binding.confirmPassEt.text.toString()
 
+            // Check empty fields
             if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
+                // Check password matching
                 if (pass == confirmPass) {
                     // Commented out Firebase functions
                     // firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener {
@@ -48,6 +56,8 @@ class SignUpFragment : Fragment() {
                     //         Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
                     //     }
                     // }
+
+                    // TODO: remove this and uncomment the above code
                     findNavController().navigate(R.id.navigationHome)
                 } else {
                     Toast.makeText(context, "Password is not matching", Toast.LENGTH_SHORT).show()

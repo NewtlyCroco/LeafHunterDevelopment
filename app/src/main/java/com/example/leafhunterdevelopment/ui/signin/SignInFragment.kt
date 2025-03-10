@@ -26,20 +26,22 @@ class SignInFragment : Fragment() {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Commented out Firebase initialization
         // firebaseAuth = FirebaseAuth.getInstance()
 
+        // Button to change to sign up
         binding.textView.setOnClickListener {
             // Navigate to SignUpFragment
             findNavController().navigate(R.id.signUpFragment)
         }
 
+        // Sign in button listener
         binding.button.setOnClickListener {
+
+            // Get inputs
             val email = binding.emailEt.text.toString()
             val pass = binding.passET.text.toString()
 
             if (email.isNotEmpty() && pass.isNotEmpty()) {
-                // Commented out Firebase functions
                 // firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
                 //     if (it.isSuccessful) {
                 //         findNavController().navigate(R.id.navigationHome)
@@ -47,6 +49,9 @@ class SignInFragment : Fragment() {
                 //         Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
                 //     }
                 // }
+
+
+                // TODO: remove this and uncomment the above code
                 findNavController().navigate(R.id.navigationHome)
             } else {
                 Toast.makeText(context, "Empty fields aren't allowed", Toast.LENGTH_SHORT).show()
@@ -59,7 +64,7 @@ class SignInFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        // Commented out Firebase functions
+        // Check if user is already logged in
         // if(firebaseAuth.currentUser != null){
         //     findNavController().navigate(R.id.navigationHome)
         // }
