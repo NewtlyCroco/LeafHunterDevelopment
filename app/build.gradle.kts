@@ -52,6 +52,7 @@ dependencies {
 
     // Firebase BOM
     implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-auth")
 
     implementation(libs.androidx.annotation)
     testImplementation(libs.junit)

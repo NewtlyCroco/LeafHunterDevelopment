@@ -10,23 +10,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.leafhunterdevelopment.R
 import com.example.leafhunterdevelopment.databinding.FragmentSignInBinding
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 
 class SignInFragment : Fragment() {
 
     private var _binding: FragmentSignInBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: SignInViewModel
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(this).get(SignInViewModel::class.java)
+        viewModel = ViewModelProvider(this)[SignInViewModel::class.java]
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // Button to change to sign up
         binding.textView.setOnClickListener {
@@ -42,17 +45,14 @@ class SignInFragment : Fragment() {
             val pass = binding.passET.text.toString()
 
             if (email.isNotEmpty() && pass.isNotEmpty()) {
-                // firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
-                //     if (it.isSuccessful) {
-                //         findNavController().navigate(R.id.navigationHome)
-                //     } else {
-                //         Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
-                //     }
-                // }
+                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        findNavController().navigate(R.id.navigationHome)
+                    } else {
+                        Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                    }
+                }
 
-
-                // TODO: remove this and uncomment the above code
-                findNavController().navigate(R.id.navigationHome)
             } else {
                 Toast.makeText(context, "Empty fields aren't allowed", Toast.LENGTH_SHORT).show()
             }
@@ -65,9 +65,9 @@ class SignInFragment : Fragment() {
         super.onStart()
 
         // Check if user is already logged in
-        // if(firebaseAuth.currentUser != null){
-        //     findNavController().navigate(R.id.navigationHome)
-        // }
+        if(firebaseAuth.currentUser != null){
+            findNavController().navigate(R.id.navigationHome)
+        }
     }
 
     override fun onDestroyView() {
