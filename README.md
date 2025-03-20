@@ -50,6 +50,8 @@ Oskari - Code Structure and management
 **3/3/2025** -- Repo remade and template files are constructed
 Will was finally able to get some work done, and played around with the UI elements and button construction
 
+**3/5/2025** -- UI figuring out, standard code style established being camelCase, and deligated UI work, Kian is working on the login page and a super simple database backend, Will is going to work on basic button design, and espeically the camera button to take photos, and possibly a page for the user profile unconnected to the database for the moment. Looked at the backend implementation and espeically how we are doing image processing, we are going to use the links from mongodb with are aggregate APIs to work with our images. We looking into possibly doing maps as a tool, and Oskari is going to work on our mongodb async database and start on our user collection. We are going to have each user have a personal page in the colleciton, holdling all there information centrally to make all the data handling super fast!
+
 ## Structure
 ```mermaid
 graph TD
