@@ -11,23 +11,26 @@ import androidx.navigation.fragment.findNavController
 import com.example.leafhunterdevelopment.R
 import com.example.leafhunterdevelopment.databinding.FragmentSignUpBinding
 import com.example.leafhunterdevelopment.ui.signup.SignUpViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 
 class SignUpFragment : Fragment() {
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: SignUpViewModel
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(this).get(SignUpViewModel::class.java)
+        viewModel = ViewModelProvider(this)[SignUpViewModel::class.java]
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // Button to change to sign in
         binding.textView.setOnClickListener {
@@ -48,17 +51,13 @@ class SignUpFragment : Fragment() {
                 // Check password matching
                 if (pass == confirmPass) {
                     // Commented out Firebase functions
-                    // firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener {
-                    //     if (it.isSuccessful) {
-                    //         val intent = Intent(activity, SignInActivity::class.java)
-                    //         startActivity(intent)
-                    //     } else {
-                    //         Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
-                    //     }
-                    // }
-
-                    // TODO: remove this and uncomment the above code
-                    findNavController().navigate(R.id.navigationHome)
+                    firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            findNavController().navigate(R.id.navigationHome)
+                        } else {
+                            Toast.makeText(context, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 } else {
                     Toast.makeText(context, "Password is not matching", Toast.LENGTH_SHORT).show()
                 }
