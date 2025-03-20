@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243989167908",
+    "project_id": "leafhunter-daf07",
+    "storage_bucket": "leafhunter-daf07.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243989167908:android:a894b1746b0836ed3b7db1",
+        "android_client_info": {
+          "package_name": "com.example.leafhunterdevelopment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmpHErkYXMd4n29iPoOZJjgSd804WlREQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
