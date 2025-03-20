@@ -24,15 +24,15 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigationDashboard"
-        android:name="com.example.leafhunterdevelopment.ui.dashboard.DashboardFragment"
+        android:id="@+id/navigationCamera"
+        android:name="com.example.leafhunterdevelopment.ui.dashboard.CameraFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_camera" />
 
     <fragment
-        android:id="@+id/navigationNotifications"
-        android:name="com.example.leafhunterdevelopment.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigationSettings"
+        android:name="com.example.leafhunterdevelopment.ui.notifications.SettingsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_settings" />
 
 </navigation>
