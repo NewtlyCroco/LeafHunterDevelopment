@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.kotlin.android) // Maps to id("org.jetbrains.kotlin.android")
     id("com.android.application")
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -53,6 +52,7 @@ dependencies {
     // Firebase BOM
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-auth")
+    implementation(libs.play.services.location)
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.camera.core)
