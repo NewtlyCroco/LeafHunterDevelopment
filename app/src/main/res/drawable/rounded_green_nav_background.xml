@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- This rectangle will cover any white space behind rounded corners -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/green_700"/>
+            <corners android:radius="20dp"/>
+        </shape>
+    </item>
+
+    <!-- Main navigation background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/green_500"/>
+            <corners
+                android:topLeftRadius="20dp"
+                android:topRightRadius="20dp"/>
+        </shape>
+    </item>
+</layer-list>
