@@ -2,7 +2,7 @@ package com.example.leafhunterdevelopment.ui.dashboard
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,13 +14,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.leafhunterdevelopment.R
 import com.example.leafhunterdevelopment.databinding.FragmentCameraBinding
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.io.File
-import java.text.SimpleDateFormat
+import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -30,7 +28,6 @@ class CameraFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var cameraButtonCard: MaterialCardView
-    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var storageRef: StorageReference
 
@@ -70,7 +67,6 @@ class CameraFragment : Fragment() {
                 .start()
         }
 
-        outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         // Request camera permissions
@@ -92,6 +88,9 @@ class CameraFragment : Fragment() {
             try {
                 cameraProvider = cameraProviderFuture.get()
 
+                val preview: Preview = Preview.Builder().build()
+                preview.surfaceProvider = binding.previewView.surfaceProvider
+
                 // Only setup ImageCapture (no Preview needed)
                 imageCapture = ImageCapture.Builder()
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
@@ -105,9 +104,13 @@ class CameraFragment : Fragment() {
                 cameraProvider?.bindToLifecycle(
                     viewLifecycleOwner,
                     cameraSelector,
+                    preview
+                )
+                cameraProvider?.bindToLifecycle(
+                    viewLifecycleOwner,
+                    cameraSelector,
                     imageCapture
                 )
-
             } catch(exc: Exception) {
                 Log.e(TAG, "Camera initialization failed", exc)
                 Toast.makeText(context, "Failed to initialize camera", Toast.LENGTH_SHORT).show()
@@ -118,44 +121,37 @@ class CameraFragment : Fragment() {
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        // Create timestamped output file
-        val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
-        )
-
-        // Create output options
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-
-        // Capture image
         imageCapture.takePicture(
-            outputOptions,
             cameraExecutor,
-            object : ImageCapture.OnImageSavedCallback {
+            object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    Log.e(TAG, "Photo capture failed: ${exc.message}")
                     requireActivity().runOnUiThread {
                         Toast.makeText(context, "Photo capture failed", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
-                    Log.d(TAG, "Photo capture succeeded: $savedUri")
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    Log.d(TAG, "Image captured successfully")
+                    Log.d(TAG, "  Size ${image.width}x${image.height} format ${image.format}")
+                    Log.d(TAG, "  Info ${image.imageInfo}")
 
                     requireActivity().runOnUiThread {
                         Toast.makeText(context, "Photo captured!", Toast.LENGTH_SHORT).show()
-                        uploadImageToFirebase(savedUri)
+                        uploadBitmapToFirebase(image)
                     }
                 }
             }
         )
     }
 
-    private fun uploadImageToFirebase(imageUri: Uri) {
-        val photoRef = storageRef.child("photos/${UUID.randomUUID()}.jpg")
+    private fun uploadBitmapToFirebase(image: ImageProxy) {
+        val photoRef = storageRef.child("photos/${UUID.randomUUID()}.png")
 
-        photoRef.putFile(imageUri)
+        val stream = ByteArrayOutputStream()
+        image.toBitmap().compress(Bitmap.CompressFormat.PNG, 90, stream)
+
+        photoRef.putBytes(stream.toByteArray())
             .addOnSuccessListener {
                 photoRef.downloadUrl.addOnSuccessListener { uri ->
                     Log.d(TAG, "Image uploaded to: $uri")
@@ -174,12 +170,6 @@ class CameraFragment : Fragment() {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun getOutputDirectory(): File {
-        val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else requireActivity().filesDir
-    }
     //need to find a better way to do this method
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
@@ -203,11 +193,9 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraFragment"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.CAMERA
         )
     }
 }
