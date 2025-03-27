@@ -86,4 +86,14 @@ graph TD
 
 
 ## To-Do
-**2/12/2025** -- Email Pl@ntNet about student non-profit API thing to use??
+**12/2/2025** -- Email Pl@ntNet about student non-profit API thing to use??
+**3/27/2025** -- 
+UI CHECKLIST (Will)
+
+ - [ ] Transparent system bar (To have battery and notifications displayed)
+ - [ ] Transparent gesture navigation bar (for the little bar at the bottom for app slide up)
+ - [ ] Fix transparency box on navigation (Make the inherited parent be not white color)
+
+
+
+
