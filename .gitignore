@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+functions/venv
+functions/__pycache__
+functions/.env
+functions/.python-version
+functions/bin
+
+**/firebase-debug.log

@@ -3,7 +3,11 @@ package com.example.leafhunterdevelopment.ui.dashboard
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +19,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.leafhunterdevelopment.databinding.FragmentCameraBinding
+import com.example.leafhunterdevelopment.R
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import android.os.Looper
+import android.content.Intent
+import android.net.Uri
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -26,6 +40,9 @@ import java.util.concurrent.Executors
 class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
+
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private lateinit var cameraViewModel: CameraViewModel
 
     private lateinit var cameraButtonCard: MaterialCardView
     private lateinit var cameraExecutor: ExecutorService
@@ -39,7 +56,11 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        cameraViewModel = ViewModelProvider(this).get(CameraViewModel::class.java)
+
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
+      requestLocationPermission()
+
         return binding.root
     }
 
@@ -184,6 +205,118 @@ class CameraFragment : Fragment() {
         }
     }
 
+    private fun requestLocationPermission() {
+        val hasCoarseLocation = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    
+        val hasFineLocation = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    
+        if (hasFineLocation) {
+            // Fine location permission is granted
+            fetchCurrentLocation()
+        } else if (hasCoarseLocation) {
+            // Only coarse location permission is granted
+            Toast.makeText(
+                context,
+                "Fine location is required for accurate location. Please enable it in settings.",
+                Toast.LENGTH_LONG
+            ).show()
+            openAppSettings()
+        } else {
+            // Request both fine and coarse location permissions
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+    
+    private fun openAppSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", requireContext().packageName, null)
+        }
+        startActivity(intent)
+    }
+
+
+
+    @SuppressLint("MissingPermission")
+    private fun fetchCurrentLocation() {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            1000L
+        ).build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    fusedLocationClient.removeLocationUpdates(this) // Stop updates after getting location
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        Log.d("CameraFragment", "Lat: $latitude, Lon: $longitude")
+                        Toast.makeText(context, "Lat: $latitude, Lon: $longitude", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.navigationHome)
+                        // Optionally navigate back or cancel the flow
+                    }
+                }
+            },
+            Looper.getMainLooper()
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            // Re-check coarse/fine permission
+            val hasCoarseLocation = ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            val hasFineLocation = ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+            when {
+                hasFineLocation -> {
+                    // Permission granted for fine location
+                    fetchCurrentLocation()
+                }
+                hasCoarseLocation -> {
+                    // Only approximate location permission granted
+                    Toast.makeText(
+                        context,
+                        "We need your fine location. Please enable it in Settings.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    openAppSettings()
+                }
+                else -> {
+                    // No location permission at all
+                    Toast.makeText(context, "Location permission denied. Cannot proceed!", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.navigationHome)
+                }
+            }
+        }
+    }
+ 
     override fun onDestroyView() {
         super.onDestroyView()
         cameraExecutor.shutdown()
