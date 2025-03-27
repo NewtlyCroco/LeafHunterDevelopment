@@ -88,6 +88,9 @@ class CameraFragment : Fragment() {
             try {
                 cameraProvider = cameraProviderFuture.get()
 
+                val preview: Preview = Preview.Builder().build()
+                preview.surfaceProvider = binding.previewView.surfaceProvider
+
                 // Only setup ImageCapture (no Preview needed)
                 imageCapture = ImageCapture.Builder()
                     .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
@@ -101,9 +104,13 @@ class CameraFragment : Fragment() {
                 cameraProvider?.bindToLifecycle(
                     viewLifecycleOwner,
                     cameraSelector,
+                    preview
+                )
+                cameraProvider?.bindToLifecycle(
+                    viewLifecycleOwner,
+                    cameraSelector,
                     imageCapture
                 )
-
             } catch(exc: Exception) {
                 Log.e(TAG, "Camera initialization failed", exc)
                 Toast.makeText(context, "Failed to initialize camera", Toast.LENGTH_SHORT).show()
