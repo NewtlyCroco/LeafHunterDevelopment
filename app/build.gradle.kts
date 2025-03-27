@@ -56,6 +56,7 @@ dependencies {
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.camera.lifecycle)
     testImplementation(libs.junit)
