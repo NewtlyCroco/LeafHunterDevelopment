@@ -8,31 +8,26 @@
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.example.leafhunterdevelopment.ui.signin.SignInFragment"
-        android:label="Sign In"
         tools:layout="@layout/fragment_sign_in" />
 
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.leafhunterdevelopment.ui.signup.SignUpFragment"
-        android:label="Sign Up"
         tools:layout="@layout/fragment_sign_up" />
 
     <fragment
         android:id="@+id/navigationHome"
         android:name="com.example.leafhunterdevelopment.ui.home.HomeFragment"
-        android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigationCamera"
         android:name="com.example.leafhunterdevelopment.ui.dashboard.CameraFragment"
-        android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_camera" />
 
     <fragment
         android:id="@+id/navigationSettings"
         android:name="com.example.leafhunterdevelopment.ui.notifications.SettingsFragment"
-        android:label="@string/title_notifications"
         tools:layout="@layout/fragment_settings" />
 
 </navigation>

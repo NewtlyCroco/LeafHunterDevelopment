@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigationHome, R.id.navigationCamera, R.id.navigationSettings
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         // Hide navigation if on the login screen
