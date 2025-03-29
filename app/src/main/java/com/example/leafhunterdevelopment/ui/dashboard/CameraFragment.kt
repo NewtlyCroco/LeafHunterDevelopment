@@ -1,13 +1,9 @@
 package com.example.leafhunterdevelopment.ui.dashboard
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +23,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import android.os.Looper
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.FirebaseStorage
@@ -41,7 +39,7 @@ class CameraFragment : Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+
     private lateinit var cameraViewModel: CameraViewModel
 
     private lateinit var cameraButtonCard: MaterialCardView
@@ -59,14 +57,12 @@ class CameraFragment : Fragment() {
         cameraViewModel = ViewModelProvider(this).get(CameraViewModel::class.java)
 
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
-      requestLocationPermission()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Initialize Firebase Storage
         storageRef = FirebaseStorage.getInstance().reference
 
@@ -90,16 +86,8 @@ class CameraFragment : Fragment() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Request camera permissions
-        if (allPermissionsGranted()) {
-            initializeCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
+        // Request permissions
+        requestCameraPermission()
     }
 
     private fun initializeCamera() {
@@ -177,6 +165,7 @@ class CameraFragment : Fragment() {
                 photoRef.downloadUrl.addOnSuccessListener { uri ->
                     Log.d(TAG, "Image uploaded to: $uri")
                     // TODO: Save the download URL to Firestore if needed
+                    // TODO: change to prod version of the app
                 }
             }
             .addOnFailureListener { e ->
@@ -187,25 +176,41 @@ class CameraFragment : Fragment() {
             }
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    private fun openAppSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", requireContext().packageName, null)
+        }
+        startActivity(intent)
     }
 
-    //need to find a better way to do this method
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                initializeCamera()
+    private fun requestCameraPermission() {
+        val hasCameraPermission = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasCameraPermission) {
+            // Camera permission is granted
+            initializeCamera()
+        } else {
+            // Check if the user denied the permission previously
+            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
+                // Show rationale and re-request permission
+                Toast.makeText(context, "Camera permission is required to use this feature.", Toast.LENGTH_LONG).show()
+                requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA),
+                    CAMERA_PERMISSION_REQUEST_CODE
+                )
             } else {
-                Toast.makeText(context, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+                // Permission is permanently denied, guide user to app settings
+                Toast.makeText(context, "Please enable camera permission in settings.", Toast.LENGTH_LONG).show()
+                openAppSettings()
             }
         }
     }
 
     private fun requestLocationPermission() {
+        // Check what permissions are granted
         val hasCoarseLocation = ActivityCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -216,31 +221,27 @@ class CameraFragment : Fragment() {
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     
-        if (hasFineLocation) {
-            // Fine location permission is granted
+        if (hasFineLocation || hasCoarseLocation) {
+            // Either fine or coarse location permission is granted
             fetchCurrentLocation()
-        } else if (hasCoarseLocation) {
-            // Only coarse location permission is granted
-            Toast.makeText(
-                context,
-                "Fine location is required for accurate location. Please enable it in settings.",
-                Toast.LENGTH_LONG
-            ).show()
-            openAppSettings()
         } else {
-            // Request both fine and coarse location permissions
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
+            if(ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ||
+                ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // Show rationale and re-request permission
+                Toast.makeText(context, "Location permission is required to use this feature.", Toast.LENGTH_LONG).show()
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ),
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
+            } else {
+                // Permission is permanently denied, guide user to app settings
+                Toast.makeText(context, "Please enable location permission in settings.", Toast.LENGTH_LONG).show()
+                openAppSettings()
+            }
         }
-    }
-    
-    private fun openAppSettings() {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", requireContext().packageName, null)
-        }
-        startActivity(intent)
     }
 
 
@@ -249,7 +250,7 @@ class CameraFragment : Fragment() {
     private fun fetchCurrentLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY, // Use balanced accuracy for coarse location
             1000L
         ).build()
 
@@ -267,7 +268,6 @@ class CameraFragment : Fragment() {
                     } else {
                         Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.navigationHome)
-                        // Optionally navigate back or cancel the flow
                     }
                 }
             },
@@ -282,41 +282,53 @@ class CameraFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            // Re-check coarse/fine permission
-            val hasCoarseLocation = ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
 
-            val hasFineLocation = ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+        when (requestCode) {
+            CAMERA_PERMISSION_REQUEST_CODE -> {
+                val cameraGranted = handleCameraPermissions(grantResults)
+                if (cameraGranted) {
+                    // request location
+                    requestLocationPermission()
+                }
+            }
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                val locationGranted = handleLocationPermissions(grantResults)
 
-            when {
-                hasFineLocation -> {
-                    // Permission granted for fine location
-                    fetchCurrentLocation()
-                }
-                hasCoarseLocation -> {
-                    // Only approximate location permission granted
-                    Toast.makeText(
-                        context,
-                        "We need your fine location. Please enable it in Settings.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    openAppSettings()
-                }
-                else -> {
-                    // No location permission at all
-                    Toast.makeText(context, "Location permission denied. Cannot proceed!", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.navigationHome)
-                }
             }
         }
     }
- 
+
+    private fun handleLocationPermissions(grantResults: IntArray) {
+
+        val hasFineLocation = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        val hasCoarseLocation = grantResults.size > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED
+
+        when {
+            hasFineLocation || hasCoarseLocation -> {
+                // Either fine or coarse location permission is granted
+                fetchCurrentLocation()
+            }
+            else -> {
+                // No location permission at all
+                Toast.makeText(context, "Location permission denied. Cannot proceed!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.navigationHome)
+            }
+        }
+    }
+
+    private fun handleCameraPermissions(grantResults: IntArray): Boolean {
+        val isCameraPermissionGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (isCameraPermissionGranted) {
+            initializeCamera()
+            return true
+        } else {
+            Toast.makeText(context, "Camera permission not granted.", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.navigationHome)
+            return false
+        }
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         cameraExecutor.shutdown()
@@ -326,9 +338,7 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraFragment"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA
-        )
+        private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+        private val CAMERA_PERMISSION_REQUEST_CODE = 1002
     }
 }
