@@ -16,21 +16,20 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.leafhunterdevelopment.databinding.FragmentCameraBinding
 import com.example.leafhunterdevelopment.R
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import android.os.Looper
+import com.example.leafhunterdevelopment.utils.FirebaseHelper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Looper
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -45,6 +44,8 @@ class CameraFragment : Fragment() {
     private lateinit var cameraButtonCard: MaterialCardView
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var storageRef: StorageReference
+
+    private lateinit var firebaseHelper: FirebaseHelper
 
     private var imageCapture: ImageCapture? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -65,6 +66,8 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Initialize Firebase Storage
         storageRef = FirebaseStorage.getInstance().reference
+
+        firebaseHelper = FirebaseHelper(useEmulator = true)
 
         // Set up camera button with bounce animation
         cameraButtonCard = binding.cameraButtonCard
@@ -145,36 +148,104 @@ class CameraFragment : Fragment() {
                     Log.d(TAG, "  Size ${image.width}x${image.height} format ${image.format}")
                     Log.d(TAG, "  Info ${image.imageInfo}")
 
+                    // DEBUGGING PURPORSES TODO: REMOVE
+                    // val bitmap = BitmapFactory.decodeResource(resources, R.drawable.variegata)
+                    // image.close()
+
+                    // Convert ImageProxy to Bitmap
+                    val bitmap = image.toBitmap()
+
                     requireActivity().runOnUiThread {
                         Toast.makeText(context, "Photo captured!", Toast.LENGTH_SHORT).show()
-                        uploadBitmapToFirebase(image)
+                        // TODO: some sort of yes/no choice
+                        firebaseHelper.uploadBitmapToFirebase(
+                            bitmap,
+                            onSuccess = { uri ->
+                                Log.d(TAG, "Before")
+                                storePlantToFirebase(uri.toString())
+                            },
+                            onFailure = { e ->
+                                Log.e(TAG, "Upload failed: ${e.message}")
+                                Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                 }
             }
         )
     }
 
-    private fun uploadBitmapToFirebase(image: ImageProxy) {
-        val photoRef = storageRef.child("photos/${UUID.randomUUID()}.png")
+    private fun storePlantToFirebase(uri: String) {
+        val data = mapOf("imageUrl" to uri.toString())
+        firebaseHelper.callFirebaseFunction(
+            functionName = LOCAL_GET_PLANT,
+            data = data,
+            onSuccess = { result -> // Plant recognition succeeded
+                // Fetch the user's current location
+                fetchImmediateLocation(
+                    onLocationFetched = { latitude, longitude ->
+                        // Combine plant recognition result with location data
+                        val plantData = mapOf(
+                            "imageUrl" to uri.toString(),
+                            "userId" to (firebaseHelper.getCurrentUserId() ?: ""),
+                            "lat" to latitude,
+                            "lon" to longitude,
+                            "plantData" to (result ?: "unknown_result")
+                        )
 
-        val stream = ByteArrayOutputStream()
-        image.toBitmap().compress(Bitmap.CompressFormat.PNG, 90, stream)
-
-        photoRef.putBytes(stream.toByteArray())
-            .addOnSuccessListener {
-                photoRef.downloadUrl.addOnSuccessListener { uri ->
-                    Log.d(TAG, "Image uploaded to: $uri")
-                    // TODO: Save the download URL to Firestore if needed
-                    // TODO: change to prod version of the app
+                        // Send the combined data to the database
+                        firebaseHelper.callFirebaseFunction(
+                            functionName = LOCAL_STORE_PLANT,
+                            data = plantData,
+                            onSuccess = {
+                                Toast.makeText(context, "Plant data stored successfully!", Toast.LENGTH_SHORT).show()
+                            },
+                            onFailure = { e ->
+                                Toast.makeText(context, "Failed to store plant data: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    },
+                    onFailure = {
+                        Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.navigationHome)
+                    }
+                )
+            },
+            onFailure = { e ->
+                if(e.message == "NOT_FOUND") {
+                    Log.d(TAG, "NOT_RECOGNIZED")
+                    Toast.makeText(context, "The plant was not recognized, try again.", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "Function call failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Upload failed: ${e.message}")
-                requireActivity().runOnUiThread {
-                    Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()
-                }
-            }
+        )
     }
+
+    @SuppressLint("MissingPermission")
+    private fun fetchImmediateLocation(
+        onLocationFetched: (Double, Double) -> Unit,
+        onFailure: () -> Unit
+    ) {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationClient.getCurrentLocation(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            object : CancellationToken() {
+                override fun onCanceledRequested(listener: OnTokenCanceledListener): CancellationToken = this
+                override fun isCancellationRequested(): Boolean = false
+            }
+        ).addOnSuccessListener { location ->
+            if (location != null) {
+                onLocationFetched(location.latitude, location.longitude)
+            } else {
+                onFailure()
+            }
+        }.addOnFailureListener {
+            onFailure()
+        }
+    }
+
+
 
     private fun openAppSettings() {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -209,6 +280,7 @@ class CameraFragment : Fragment() {
         }
     }
 
+    // TODO: is location requesting needed here?
     private fun requestLocationPermission() {
         // Check what permissions are granted
         val hasCoarseLocation = ActivityCompat.checkSelfPermission(
@@ -223,7 +295,16 @@ class CameraFragment : Fragment() {
     
         if (hasFineLocation || hasCoarseLocation) {
             // Either fine or coarse location permission is granted
-            fetchCurrentLocation()
+            fetchImmediateLocation(
+                onLocationFetched = { latitude, longitude ->
+                    // TODO: send to firebase
+                    Log.d(TAG, "Lat: $latitude, Lon: $longitude")
+                },
+                onFailure = {
+                    Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.navigationHome)
+                }
+            )
         } else {
             if(ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ||
                 ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -242,37 +323,6 @@ class CameraFragment : Fragment() {
                 openAppSettings()
             }
         }
-    }
-
-
-
-    @SuppressLint("MissingPermission")
-    private fun fetchCurrentLocation() {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY, // Use balanced accuracy for coarse location
-            1000L
-        ).build()
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    fusedLocationClient.removeLocationUpdates(this) // Stop updates after getting location
-                    val location = locationResult.lastLocation
-                    if (location != null) {
-                        val latitude = location.latitude
-                        val longitude = location.longitude
-                        Log.d("CameraFragment", "Lat: $latitude, Lon: $longitude")
-                        Toast.makeText(context, "Lat: $latitude, Lon: $longitude", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.navigationHome)
-                    }
-                }
-            },
-            Looper.getMainLooper()
-        )
     }
 
     @SuppressLint("MissingPermission")
@@ -306,7 +356,17 @@ class CameraFragment : Fragment() {
         when {
             hasFineLocation || hasCoarseLocation -> {
                 // Either fine or coarse location permission is granted
-                fetchCurrentLocation()
+                fetchImmediateLocation(
+                    onLocationFetched = { latitude, longitude ->
+                        // TODO: send to firebase
+                        Log.d(TAG, "Lat: $latitude, Lon: $longitude")
+                        Toast.makeText(context, "Lat: $latitude, Lon: $longitude", Toast.LENGTH_SHORT).show()
+                    },
+                    onFailure = {
+                        Toast.makeText(context, "Unable to fetch location", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.navigationHome)
+                    }
+                )
             }
             else -> {
                 // No location permission at all
@@ -338,7 +398,9 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "CameraFragment"
-        private val LOCATION_PERMISSION_REQUEST_CODE = 1001
-        private val CAMERA_PERMISSION_REQUEST_CODE = 1002
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 1002
+        private const val LOCAL_GET_PLANT = "get_plant_families"
+        private const val LOCAL_STORE_PLANT = "store_plant_data"
     }
 }

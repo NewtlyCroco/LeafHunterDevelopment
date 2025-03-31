@@ -11,5 +11,10 @@
         "*.local"
       ]
     }
-  ]
+  ],
+  "emulators": {
+    "functions": {
+      "host": "0.0.0.0"
+    }
+  }
 }
