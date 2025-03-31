@@ -18,7 +18,8 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
     """Downloads image from Firebase Storage, sends to Pl@ntNet API, and returns plant families."""
     try:
         data = req.get_json()
-        image_url = data.get("imageUrl")
+        image_url = data.get("data", {}).get("imageUrl")
+        print(data)
 
         if not image_url:
             return https_fn.Response(json.dumps({"error": "Missing image URL"}), status=400, content_type="application/json")
@@ -60,6 +61,7 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
 
         # Plant not reognized
         if response.status_code == 404:
+            blob.delete()
             return https_fn.Response(json.dumps({"error": "Plant not recognized."}), status=404, content_type="application/json")
 
         if response.status_code != 200:
@@ -69,6 +71,7 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
         result = plant_data.get("results", [{}])[0]  # Get the first result or an empty dictionary if no results
 
         if result["score"] < 0.7:
+            blob.delete()
             return https_fn.Response(json.dumps({"error": "Plant not recognized."}), status=404, content_type="application/json")
 
         species = result.get("species", {})
@@ -82,10 +85,13 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
             "familyName": family_name,
             "commonName": common_name
         }
+        print(plant_info)
 
-        return https_fn.Response(json.dumps(plant_info), status=200, content_type="application/json")
+        return https_fn.Response(json.dumps({"data": plant_info}), status=200, content_type="application/json")
 
     except Exception as e:
+        if "blob" in locals():
+            blob.delete()
         return https_fn.Response(json.dumps({"error": str(e)}), status=500, content_type="application/json")
 
 
@@ -93,7 +99,8 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
 def store_plant_data(req: https_fn.Request) -> https_fn.Response:
     """Stores plant data in Firestore."""
     try:
-        data = req.get_json()
+        data = req.get_json().get("data", {})
+        print(data)
         user_id = data.get("userId")
         image_url = data.get("imageUrl")
         lat = data.get("lat")
@@ -112,7 +119,7 @@ def store_plant_data(req: https_fn.Request) -> https_fn.Response:
             "timestamp": firestore.SERVER_TIMESTAMP
         })
 
-        return https_fn.Response(json.dumps({"message": "Data stored successfully"}), status=200, content_type="application/json")
+        return https_fn.Response(json.dumps({"data": {"message": "Data stored successfully"}}), status=200, content_type="application/json")
 
     except Exception as e:
         return https_fn.Response(json.dumps({"error": str(e)}), status=500, content_type="application/json")
