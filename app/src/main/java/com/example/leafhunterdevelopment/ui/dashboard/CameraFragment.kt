@@ -109,7 +109,7 @@ class CameraFragment : Fragment() {
                     .build()
 
                 // Select back camera
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                 // Bind only ImageCapture use case
                 cameraProvider?.unbindAll()
