@@ -124,3 +124,45 @@ def store_plant_data(req: https_fn.Request) -> https_fn.Response:
     except Exception as e:
         return https_fn.Response(json.dumps({"error": str(e)}), status=500, content_type="application/json")
 
+
+@https_fn.on_request()
+def get_user_images(req: https_fn.Request) -> https_fn.Response:
+    """Retrieves all image URLs uploaded by a specific user."""
+    try:
+        # Parse the request to get the user ID
+        data = req.get_json()
+        user_id = data.get("userId")
+
+        if not user_id:
+            return https_fn.Response(
+                json.dumps({"error": "Missing userId"}),
+                status=400,
+                content_type="application/json"
+            )
+
+        # Query Firestore for the user's plants collection
+        user_plants_ref = db.collection("users").document(user_id).collection("plants")
+        docs = user_plants_ref.stream()
+
+        # Extract image URLs from the documents
+        image_urls = []
+        for doc in docs:
+            plant_data = doc.to_dict()
+            image_url = plant_data.get("imageUrl")
+            if image_url:
+                image_urls.append(image_url)
+
+        # Return the list of image URLs
+        return https_fn.Response(
+            json.dumps({"data": {"imageUrls": image_urls}}),
+            status=200,
+            content_type="application/json"
+        )
+
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({"error": str(e)}),
+            status=500,
+            content_type="application/json"
+        )
+
