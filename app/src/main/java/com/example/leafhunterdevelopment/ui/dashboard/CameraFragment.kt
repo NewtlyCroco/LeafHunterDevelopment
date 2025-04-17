@@ -222,6 +222,7 @@ class CameraFragment : Fragment() {
         )
     }
 
+    // TODO: maybe move to a separate file
     @SuppressLint("MissingPermission")
     private fun fetchImmediateLocation(
         onLocationFetched: (Double, Double) -> Unit,
