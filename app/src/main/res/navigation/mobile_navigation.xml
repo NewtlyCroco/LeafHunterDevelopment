@@ -3,23 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/signInFragment">
 
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/signInFragment"
+        android:name="com.example.leafhunterdevelopment.ui.signin.SignInFragment"
+        tools:layout="@layout/fragment_sign_in" />
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.leafhunterdevelopment.ui.signup.SignUpFragment"
+        tools:layout="@layout/fragment_sign_up" />
+
+    <fragment
+        android:id="@+id/navigationHome"
         android:name="com.example.leafhunterdevelopment.ui.home.HomeFragment"
-        android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.leafhunterdevelopment.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
+        android:id="@+id/navigationCamera"
+        android:name="com.example.leafhunterdevelopment.ui.dashboard.CameraFragment"
+        tools:layout="@layout/fragment_camera" />
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.leafhunterdevelopment.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigationCollection"
+        android:name="com.example.leafhunterdevelopment.ui.collection.CollectionFragment"
+        tools:layout="@layout/fragment_camera" />
+    <fragment
+        android:id="@+id/navigationSettings"
+        android:name="com.example.leafhunterdevelopment.ui.notifications.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
 </navigation>
