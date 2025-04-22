@@ -170,4 +170,46 @@ def get_user_images(req: https_fn.Request) -> https_fn.Response:
             status=500,
             content_type="application/json"
         )
+@https_fn.on_request()
+def get_user_data(req: https_fn.Request) -> https_fn.Response:
+    """Retrieves all plant data for a specific user."""
+    try:
+        # Parse the request to get the user ID
+        data = req.get_json()
+        user_id = data.get("userId")
 
+        if not user_id:
+            return https_fn.Response(
+                json.dumps({"error": "Missing userId"}),
+                status=400,
+                content_type="application/json"
+            )
+
+        # Query Firestore for the user's plants collection
+        user_plants_ref = db.collection("users").document(user_id).collection("plants")
+        docs = user_plants_ref.stream()
+
+        # Extract plant data from the documents
+        plants_data = []
+        for doc in docs:
+            plant_data = doc.to_dict()
+
+            # Convert Firestore timestamp to ISO 8601 string
+            if "timestamp" in plant_data and plant_data["timestamp"]:
+                plant_data["timestamp"] = plant_data["timestamp"].isoformat()
+
+            plants_data.append(plant_data)
+
+        # Return the list of plant data
+        return https_fn.Response(
+            json.dumps({"data": {"plants": plants_data}}),
+            status=200,
+            content_type="application/json"
+        )
+
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({"error": str(e)}),
+            status=500,
+            content_type="application/json"
+        )
