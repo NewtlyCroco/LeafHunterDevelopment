@@ -18,4 +18,13 @@
     <string name="news_banner">Blah blah blah news</string>
     <string name="news_sample_title">New Plants discovered in Finland!</string>
     <string name="weekly_highlights">Weekly Highlights\n</string>
+    <string name="app_logo">App logo</string>
+    <string name="collection">Collection</string>
+    <string name="my_collection">My Collection</string>
+    <string name="tab_all_plants">All Plants</string>
+    <string name="tab_collections">Collections</string>
+    <string name="tab_favorites">Favorites</string>
+    <string name="filter_plants">Filter Plants</string>
+    <string name="add_new_plant">Add new plant</string>
+    <string name="todo">TODO</string>
 </resources>

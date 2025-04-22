@@ -10,7 +10,10 @@
         android:id="@+id/navigationCamera"
         android:icon="@drawable/camera_icon"
         android:title="@string/title_camera" />
-
+    <item
+        android:id="@+id/navigationCollection"
+        android:icon="@drawable/data_icon"
+        android:title="@string/collection" />
     <item
         android:id="@+id/navigationSettings"
         android:icon="@drawable/profile_icon"
