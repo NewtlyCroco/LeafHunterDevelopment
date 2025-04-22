@@ -34,7 +34,6 @@ class CollectionFragment : Fragment() {
             tab.text = when(position) {
                 0 -> getString(R.string.tab_all_plants)
                 1 -> getString(R.string.tab_collections)
-                2 -> getString(R.string.tab_favorites)
                 else -> ""
             }
         }.attach()
@@ -46,13 +45,12 @@ class CollectionFragment : Fragment() {
     }
 
     private inner class CollectionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 3
+        override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
             return when(position) {
                 0 -> PlantListFragment()
                 1 -> CollectionsFragment()
-                2 -> FavoritesFragment()
                 else -> throw IllegalArgumentException("Invalid position")
             }
         }
