@@ -144,17 +144,22 @@ def get_user_images(req: https_fn.Request) -> https_fn.Response:
         user_plants_ref = db.collection("users").document(user_id).collection("plants")
         docs = user_plants_ref.stream()
 
-        # Extract image URLs from the documents
-        image_urls = []
+        # Extract image URLs and common names from the documents
+        images_with_names = []
         for doc in docs:
             plant_data = doc.to_dict()
             image_url = plant_data.get("imageUrl")
+            common_name = plant_data.get("plantData", {}).get("commonName")  # Extract common name
             if image_url:
-                image_urls.append(image_url)
+                images_with_names.append({
+                    "imageUrl": image_url,
+                    "commonName": common_name
+                })
+
 
         # Return the list of image URLs
         return https_fn.Response(
-            json.dumps({"data": {"imageUrls": image_urls}}),
+            json.dumps({"data": {"images": images_with_names}}),
             status=200,
             content_type="application/json"
         )
