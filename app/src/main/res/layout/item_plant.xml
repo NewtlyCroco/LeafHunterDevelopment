@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:background="?android:attr/selectableItemBackground"
+    tools:ignore="ExtraText">
+
+    <!-- Plant Image (Optional) -->
+    <ImageView
+        android:id="@+id/plantImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/placeholder_image"
+    android:contentDescription="Plant Image"
+    android:scaleType="centerCrop" />
+
+    <!-- Plant Name -->
+    <TextView
+        android:id="@+id/plantName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/plant_name"
+    android:textStyle="bold"
+    android:textSize="18sp"
+    android:textColor="@android:color/black"
+    android:layout_marginBottom="4dp" />
+
+    <!-- Plant Description -->
+    <TextView
+        android:id="@+id/plantDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/description"
+    android:textSize="14sp"
+    android:textColor="@android:color/darker_gray"
+    android:layout_marginBottom="8dp" />
+
+    <!-- Plant Timestamp (optional) -->
+    <TextView
+        android:id="@+id/plantTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/timestamp"
+    android:textSize="12sp"
+    android:textColor="@android:color/black" />
+
+</LinearLayout>
