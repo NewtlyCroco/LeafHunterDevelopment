@@ -9,12 +9,12 @@ from io import BytesIO
 
 # Initialize Firebase Admin SDK
 firebase_admin.initialize_app()
-db = firestore.client()
 
-PLANT_NET_API_KEY = os.getenv("PLANT_NET_API_KEY")
+PLANT_NET_API_KEY = os.getenv("PLANT_NET_API_KEY") or https_fn.config().plantnet.api_key
 
 @https_fn.on_request()
 def get_plant_families(req: https_fn.Request) -> https_fn.Response:
+    db = firestore.client()
     """Downloads image from Firebase Storage, sends to Pl@ntNet API, and returns plant families."""
     try:
         data = req.get_json()
@@ -97,6 +97,7 @@ def get_plant_families(req: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def store_plant_data(req: https_fn.Request) -> https_fn.Response:
+    db = firestore.client()
     """Stores plant data in Firestore."""
     try:
         data = req.get_json().get("data", {})
@@ -127,6 +128,7 @@ def store_plant_data(req: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def get_user_images(req: https_fn.Request) -> https_fn.Response:
+    db = firestore.client()
     """Retrieves all image URLs uploaded by a specific user."""
     try:
         # Parse the request to get the user ID
@@ -172,6 +174,7 @@ def get_user_images(req: https_fn.Request) -> https_fn.Response:
         )
 @https_fn.on_request()
 def get_user_data(req: https_fn.Request) -> https_fn.Response:
+    db = firestore.client()
     """Retrieves all plant data for a specific user."""
     try:
         # Parse the request to get the user ID

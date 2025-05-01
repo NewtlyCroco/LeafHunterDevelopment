@@ -67,7 +67,7 @@ class CameraFragment : Fragment() {
         // Initialize Firebase Storage
         storageRef = FirebaseStorage.getInstance().reference
 
-        firebaseHelper = FirebaseHelper(useEmulator = true)
+        firebaseHelper = FirebaseHelper(useEmulator = false)
 
         // Set up camera button with bounce animation
         cameraButtonCard = binding.cameraButtonCard
@@ -149,7 +149,7 @@ class CameraFragment : Fragment() {
                     Log.d(TAG, "  Info ${image.imageInfo}")
 
                     // DEBUGGING PURPORSES TODO: REMOVE
-                    // val bitmap = BitmapFactory.decodeResource(resources, R.drawable.variegata)
+                    // val bitmap = BitmapFactory.decodeResource(resources, R.drawable.sun)
                     // image.close()
 
                     // Convert ImageProxy to Bitmap
