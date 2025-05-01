@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.kotlin.android) // Maps to id("org.jetbrains.kotlin.android")
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-
+    implementation (libs.glide)
     // Firebase BOM
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-auth")

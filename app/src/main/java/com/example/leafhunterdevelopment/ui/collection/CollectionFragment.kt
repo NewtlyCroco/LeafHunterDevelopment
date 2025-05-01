@@ -45,12 +45,11 @@ class CollectionFragment : Fragment() {
     }
 
     private inner class CollectionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 2
+        override fun getItemCount(): Int = 1
 
         override fun createFragment(position: Int): Fragment {
             return when(position) {
                 0 -> PlantListFragment()
-                1 -> CollectionsFragment()
                 else -> throw IllegalArgumentException("Invalid position")
             }
         }

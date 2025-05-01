@@ -27,4 +27,7 @@
     <string name="filter_plants">Filter Plants</string>
     <string name="add_new_plant">Add new plant</string>
     <string name="todo">TODO</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="description">Description</string>
+    <string name="plant_name">Plant Name</string>
 </resources>
