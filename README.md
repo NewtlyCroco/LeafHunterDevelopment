@@ -68,6 +68,59 @@ Will was finally able to get some work done, and played around with the UI eleme
 
 **5/29/2025** -- Everything mostly done, collection was completed and UI tweaked to mostly work, camera still need some small changes, but for the most part the app is functional!
 
+# 🌿 LeafHunter App Introduction
+
+## 📌 Purpose
+
+**LeafHunter** is an Android-based Pokémon GO-inspired app where users take pictures of plants to earn rewards. The app aims to turn users into **volunteer scientists**, contributing to ecological research by collecting valuable plant data.
+
+## ✨ Features
+
+- 📷 Take pictures of plants and earn rewards
+- 🌱 AI-based plant identification (via Pl@ntNet API)
+- 🔐 User authentication (Firebase) and location tracking
+- 🗺️ Gamified experience to promote biodiversity awareness
+
+Future development idea: 🌍 Open API for researchers to access anonymized plant location data 
+
+## ⚙️ Technologies
+
+- 📱 **OS**: Android
+- 🔥 **Firebase products**
+    - 🔐 Authentication
+    - 🖼️ Storage (Images)
+    - 🗃️ Firestore Database
+    - ⚡ Functions
+- 🌿 **API**: Pl@ntNet API
+- 🧑‍💻 **IDE**: Android Studio
+- 💻 **Programming languages used**
+    - 🧬 Kotlin
+    - 🐍 Python
+
+## 👥 Team Members
+
+- **Will Mitchell** – UI & Design & Infrastructure
+- **Kian Moloney** – All things related to Firebase & Location & Authentication
+- **Oskari Alaranta** – Camera functionality
+
+## 💎 Chosen features from the given options in the assignment
+
+- Basic features:
+    - Database integration
+    - Permission requests
+    - Images
+    - Localization
+- Advanced features:
+    - Camera functionality
+    - Authentication
+    - Cloud-based database (Firebase)
+    - External APIs (Pl@ntNet API)
+
+
+**Tampere University – Spring 2025**  
+Course: `#COMP.SE.221-2024-2025-1`
+
+
 
 ## Structure
 ```mermaid
@@ -100,14 +153,6 @@ graph TD
 [![](https://mermaid.ink/img/pako:eNplUk1P3DAQ_StTnxYB6n0PVTeElkikSgm9dLMH40wSq45na4-FEOa_48R8SfjkmXnv6c2zH4WiHsVWwGDoXk3SMdyWnYV0dvs_Ht0Bzs-_xZZmhF3g6UuEYnONcoCrYBndSWczulhxzURMcCvvIlT7XDSOFHqv7XjIyGpBQqzqn0UBAzmYyHMawylck5KsycIN_g_oOUK5aSd9BKPtvzQ3r_Ok20uWd9Ij1GRHKouTrF5m9QtpjIddU8G95mnlR6g3S2MZQWO-W_6FvEBemHVm3iAHZz2oBaYt-KAW_0Mwsfy46gUZg2p1s-57uX_vvGx6mRXLV6e_A7qH2Ky5JgfSMnziZPEWeYnk61XKPcKPzGiZHPZQ2RTavOZwEGdixlToPr3h46LQCZ5wxk5s09ViYCdNJzr7lKAyMLUPVoktu4BnwlEYJ7EdpPGpCscUKZZajk7Ob92jtH-J3mvsdbJR51-jyA56FE_PhOjAtg?type=png)](https://mermaid.live/edit#pako:eNplUk1P3DAQ_StTnxYB6n0PVTeElkikSgm9dLMH40wSq45na4-FEOa_48R8SfjkmXnv6c2zH4WiHsVWwGDoXk3SMdyWnYV0dvs_Ht0Bzs-_xZZmhF3g6UuEYnONcoCrYBndSWczulhxzURMcCvvIlT7XDSOFHqv7XjIyGpBQqzqn0UBAzmYyHMawylck5KsycIN_g_oOUK5aSd9BKPtvzQ3r_Ok20uWd9Ij1GRHKouTrF5m9QtpjIddU8G95mnlR6g3S2MZQWO-W_6FvEBemHVm3iAHZz2oBaYt-KAW_0Mwsfy46gUZg2p1s-57uX_vvGx6mRXLV6e_A7qH2Ky5JgfSMnziZPEWeYnk61XKPcKPzGiZHPZQ2RTavOZwEGdixlToPr3h46LQCZ5wxk5s09ViYCdNJzr7lKAyMLUPVoktu4BnwlEYJ7EdpPGpCscUKZZajk7Ob92jtH-J3mvsdbJR51-jyA56FE_PhOjAtg)
 
 
-## To-Do
-**12/2/2025** -- Email Pl@ntNet about student non-profit API thing to use??
-**3/27/2025** -- 
-UI CHECKLIST (Will)
-
- - [ ] Transparent system bar (To have battery and notifications displayed)
- - [ ] Transparent gesture navigation bar (for the little bar at the bottom for app slide up)
- - [ ] Fix transparency box on navigation (Make the inherited parent be not white color)
 
 
 
