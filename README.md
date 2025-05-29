@@ -8,23 +8,7 @@ Student project by Will Mitchell, Oskari Alaranta, and Kian Moloney. This projec
 
 **2/12/2025** -- MongoDB is current choice of database system. We have made a simplistic model of the user perspective diagram (more emphasis on image processing) we tried some names like FloraFinder but it already exists :( doesn't do the same thing as our design however. Mapped out the layout of our image processor as its the core of the app, and looked at structures, researched API's and were able to decide on some implementations for back in handling, especially for storing images and location. We went with LeafHunter as the current name of the app!
 
-**2/17/2025** -- Dear Pl@ntNet Team,
-
-We are a student group from Tampere University developing LeafHunter, a prototype app for our course #COMP.SE.221-2024-2025-1. Our app is a Pokémon GO-inspired game where users take pictures of plants to earn rewards based on species diversity and location. Beyond gamification, our vision is to turn users into volunteer scientists, contributing to ecological research by collecting valuable plant data.
-
-A key feature of LeafHunter is the creation of our own open API, which will allow researchers to request anonymized plant location data to better understand urban plant populations and biodiversity patterns. We are committed to transparent data use policies, ensuring ethical handling of user contributions while actively supporting citizen science.
-
-Pl@ntNet’s API would be crucial for our prototype, enabling accurate plant identification while fostering public engagement with biodiversity. As a non-profit student project running from February to May 2025, we are purely focused on technical and educational exploration, with no revenue generation.
-
-We would love the opportunity to integrate Pl@ntNet’s API under a non-profit profile and collaborate in promoting scientific discovery. Please let us know the requirements or conditions for access—we’re happy to provide additional details and acknowledgments.
-
-Thank you for your time and consideration. We appreciate your support in empowering students and citizen scientists alike!
-
-Best regards,
-Will Mitchell, Oskari Alaranta, and Kian Moloney
-Tampere University – LeafHunter Project
-
-(Letter requested of the Pl@netNet team to get there Non-Profit subscription possibly for free!)
+**2/17/2025** -- Email Pl@ntNet -- Got a response, no need for any extra tiers
 
 **2/17/2025** -- Development Timeline and Steps
 **Internal Deadline April 30th!**
@@ -42,9 +26,7 @@ Oskari - Code Structure and management
 
 10 weeks left
 4 weeks - UI
-
 4 weeks - Backend
-
 2 weeks - Testing/polishing!
 
 **3/3/2025** -- Repo remade and template files are constructed
