@@ -54,6 +54,9 @@ Will was finally able to get some work done, and played around with the UI eleme
 
 **3/20/2025** -- Kian has created and implemented the sign in page as well as the authentication using gradle for the build stuff, which has turned out to be a gigantic nightmare without even doing google authentication just firebase setup! Will and Oskari are working on UI and backend respectively with a slow start to creating more content for the app, hoping a coding session today will keep us on track! looking to complete the basic design and layout of the app today!
 
+**3/25/2025** -- We decided to switch to a Firebase backend as it was the easiest to manage and control on a small scale and very easy for our pivot from the idea of MongoDB
+
+**4/5/2025**
 ## Structure
 ```mermaid
 graph TD
