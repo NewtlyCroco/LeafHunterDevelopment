@@ -59,6 +59,16 @@ Will was finally able to get some work done, and played around with the UI eleme
 **4/5/2025** --  Spent a long time looking into transitioning the whole project from our legacy XML layout in android studio to jetpack compose, but ultimately unsuccessful
 
 **4/15/2025** -- Got the basica UI working and some of the backend including lots of the user login and password information, and authentication setup with Firebase
+
+**4/28/2025** -- Got permissions, camera setup and lots of the UI including a cache clearing button up and working, collection was still coming along, but backend was starting to come together, we had the idea to make lamda functions that would make all the processing easier on the client side and safe for users, shifting our architecture to be more self-micro service oriented!
+
+**5/1/2025** -- Backeend was almost completely done, with all the functions and API calls working, but not connected to the app, lots of redesigns of the layout of the application as well as some new stats features and work on the camera
+
+**5/1/2025** -- We were having a hard time looking at how to process the images effiecently, we didn't want to individually host all our own images, so we used a simple trick to turn the pictures into byte arrays upon a successful process, then store just a simple hosted link in our database, so we can separately query the image for collection use, and also not have the overhead of store lots of raw images
+
+**5/29/2025** -- Everything mostly done, collection was completed and UI tweaked to mostly work, camera still need some small changes, but for the most part the app is functional!
+
+
 ## Structure
 ```mermaid
 graph TD
