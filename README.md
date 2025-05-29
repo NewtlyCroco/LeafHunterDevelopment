@@ -121,39 +121,258 @@ Future development idea: 🌍 Open API for researchers to access anonymized plan
 Course: `#COMP.SE.221-2024-2025-1`
 
 
+# LeafHunter App - Architecture Documentation
 
-## Structure
+## Overview
+LeafHunter is a mobile application that allows users to take pictures of plants, identify them using the Pl@ntNet API, and build a personal collection of identified plants with their locations. The app uses Firebase for authentication, storage, serverless functions, and database operations.
+
+## System Architecture
+
+### Components
+1. **Mobile App (Android)**
+   - User Interface (Activities and Fragments)
+   - Authentication (Sign In/Sign Up)
+   - Camera Integration
+   - Location Services
+   - Plant Collection Management
+
+2. **Firebase Platform**
+   - Authentication - Handles user registration and login
+   - Storage - Stores plant images
+   - Cloud Functions - Serverless backend for API calls and data processing
+   - Firestore - NoSQL database for storing plant data
+
+3. **External Services**
+   - Pl@ntNet API - Plant identification service
+   - Device Location Services - Provides geolocation data
+
+### Architecture Diagram
 ```mermaid
 graph TD
-    A[Project Start] --> B[Phase 1: Planning & Design]
-    B --> C[Define Features: Caching, User Verification, Photo Capture]
-    C --> D[Design UI/UX for Photo Categorization]
-    D --> E[Phase 2: Development]
-    
-    E --> F[Set up Database for Plant Storage]
-    F --> G[Implement User Verification System]
-    G --> H[Build Photo Capture & Categorization Feature]
+    %% Main Components
+    User[User]
+    MobileApp[LeafHunter Mobile App]
 
-    H --> I[Add Caching for Fast Data Access]
-    
-    I --> J[Phase 3: Testing & Debugging]
-    J --> K[Test User Authentication]
-    J --> L[Test Photo Upload & Categorization]
-    J --> M[Test Caching & Data Retrieval]
-    
-    M --> N[Phase 4: Deployment & Feedback]
-    N --> O[Deploy App to App Stores]
-    O --> P[Collect User Feedback]
-    P --> Q[Iterate & Improve App]
-    Q --> R[Project Complete]
+    %% Firebase Services
+    Firebase[Firebase Platform]
+    Auth[Firebase Authentication]
+    Storage[Firebase Storage]
+    Functions[Firebase Cloud Functions]
+    Firestore[Firestore Database]
 
+    %% External Services
+    PlantNet[PlantNet API]
+    LocationServices[Location Services]
+
+    %% App Components
+    subgraph MobileApp[LeafHunter Mobile App]
+        MainActivity[MainActivity]
+
+        subgraph Authentication
+            SignInFragment[SignInFragment]
+            SignUpFragment[SignUpFragment]
+        end
+
+        subgraph MainNavigation
+            HomeFragment[HomeFragment]
+            CameraFragment[CameraFragment]
+            CollectionFragment[CollectionFragment]
+            SettingsFragment[SettingsFragment]
+        end
+
+        subgraph Collection
+            PlantListFragment[PlantListFragment]
+            PlantAdapter[PlantAdapter]
+        end
+
+        FirebaseHelper[FirebaseHelper]
+    end
+
+    %% Firebase Platform Components
+    subgraph Firebase[Firebase Platform]
+        Auth
+        Storage
+        Functions
+        Firestore
+    end
+
+    %% User Interactions
+    User -->|Interacts with| MobileApp
+
+    %% App Component Relationships
+    MainActivity -->|Hosts| Authentication
+    MainActivity -->|Hosts| MainNavigation
+
+    SignInFragment -->|Uses| FirebaseHelper
+    SignUpFragment -->|Uses| FirebaseHelper
+
+    CameraFragment -->|Uses| FirebaseHelper
+    CameraFragment -->|Uses| LocationServices
+
+    CollectionFragment -->|Contains| PlantListFragment
+    PlantListFragment -->|Uses| PlantAdapter
+    PlantListFragment -->|Uses| FirebaseHelper
+
+    %% Firebase Helper Relationships
+    FirebaseHelper -->|Authenticates with| Auth
+    FirebaseHelper -->|Uploads to| Storage
+    FirebaseHelper -->|Calls| Functions
+
+    %% Firebase Functions Relationships
+    Functions -->|Accesses| Storage
+    Functions -->|Stores in| Firestore
+    Functions -->|Identifies plants with| PlantNet
+
+    %% Data Flow
+    CameraFragment -->|Captures plant images| Storage
+    Functions -->|Processes images| PlantNet
+    PlantNet -->|Returns plant data| Functions
+    Functions -->|Stores plant data| Firestore
+    PlantListFragment -->|Retrieves plant data| Firestore
+
+    %% Style
+    classDef app fill:#d4f0f0,stroke:#333,stroke-width:1px;
+    classDef firebase fill:#ffcccb,stroke:#333,stroke-width:1px;
+    classDef external fill:#d8bfd8,stroke:#333,stroke-width:1px;
+    classDef user fill:#f5f5dc,stroke:#333,stroke-width:1px;
+
+    class MobileApp,MainActivity,Authentication,MainNavigation,Collection,FirebaseHelper,SignInFragment,SignUpFragment,HomeFragment,CameraFragment,CollectionFragment,SettingsFragment,PlantListFragment,PlantAdapter app;
+    class Firebase,Auth,Storage,Functions,Firestore firebase;
+    class PlantNet,LocationServices external;
+    class User user;
 ```
-## Schema
-### User Schema
-[![](https://mermaid.ink/img/pako:eNplUk1P3DAQ_StTnxYB6n0PVTeElkikSgm9dLMH40wSq45na4-FEOa_48R8SfjkmXnv6c2zH4WiHsVWwGDoXk3SMdyWnYV0dvs_Ht0Bzs-_xZZmhF3g6UuEYnONcoCrYBndSWczulhxzURMcCvvIlT7XDSOFHqv7XjIyGpBQqzqn0UBAzmYyHMawylck5KsycIN_g_oOUK5aSd9BKPtvzQ3r_Ok20uWd9Ij1GRHKouTrF5m9QtpjIddU8G95mnlR6g3S2MZQWO-W_6FvEBemHVm3iAHZz2oBaYt-KAW_0Mwsfy46gUZg2p1s-57uX_vvGx6mRXLV6e_A7qH2Ky5JgfSMnziZPEWeYnk61XKPcKPzGiZHPZQ2RTavOZwEGdixlToPr3h46LQCZ5wxk5s09ViYCdNJzr7lKAyMLUPVoktu4BnwlEYJ7EdpPGpCscUKZZajk7Ob92jtH-J3mvsdbJR51-jyA56FE_PhOjAtg?type=png)](https://mermaid.live/edit#pako:eNplUk1P3DAQ_StTnxYB6n0PVTeElkikSgm9dLMH40wSq45na4-FEOa_48R8SfjkmXnv6c2zH4WiHsVWwGDoXk3SMdyWnYV0dvs_Ht0Bzs-_xZZmhF3g6UuEYnONcoCrYBndSWczulhxzURMcCvvIlT7XDSOFHqv7XjIyGpBQqzqn0UBAzmYyHMawylck5KsycIN_g_oOUK5aSd9BKPtvzQ3r_Ok20uWd9Ij1GRHKouTrF5m9QtpjIddU8G95mnlR6g3S2MZQWO-W_6FvEBemHVm3iAHZz2oBaYt-KAW_0Mwsfy46gUZg2p1s-57uX_vvGx6mRXLV6e_A7qH2Ky5JgfSMnziZPEWeYnk61XKPcKPzGiZHPZQ2RTavOZwEGdixlToPr3h46LQCZ5wxk5s09ViYCdNJzr7lKAyMLUPVoktu4BnwlEYJ7EdpPGpCscUKZZajk7Ob92jtH-J3mvsdbJR51-jyA56FE_PhOjAtg)
 
+## Sequence Diagrams
 
+### Authentication Flow
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant Auth as Firebase Auth
 
+    User->>App: Open App
+    App->>Auth: Check if user is logged in
+    Auth-->>App: Return authentication status
+
+    alt User not logged in
+        App->>App: Display Sign In Screen
+        User->>App: Enter email/password
+        App->>Auth: signInWithEmailAndPassword()
+        Auth-->>App: Authentication result
+
+        alt Authentication failed
+            App-->>User: Show error message
+        else Authentication successful
+            App->>App: Navigate to Home Screen
+        end
+    else User already logged in
+        App->>App: Navigate to Home Screen
+    end
+```
+
+### Plant Identification Flow
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant Storage as Firebase Storage
+    participant Functions as Firebase Functions
+    participant Firestore as Firestore Database
+    participant PlantNet as PlantNet API
+
+    User->>App: Navigate to Camera Screen
+    App->>App: Request camera permission
+    App->>App: Request location permission
+    App->>App: Initialize camera
+    User->>App: Take photo of plant
+    App->>App: Capture image
+
+    App->>Storage: Upload image
+    Storage-->>App: Return image URL
+    App->>Functions: Call get_plant_families(imageUrl)
+    Functions->>Storage: Download image
+    Functions->>PlantNet: Send image for identification
+    PlantNet-->>Functions: Return plant data
+
+    alt Plant not recognized
+        Functions-->>App: Return error
+        App-->>User: Show "Plant not recognized" message
+    else Plant recognized
+        Functions-->>App: Return plant information
+        App->>App: Get current location
+        App->>Functions: Call store_plant_data(userId, imageUrl, lat, lon, plantData)
+        Functions->>Firestore: Store plant data
+        Firestore-->>Functions: Confirm data stored
+        Functions-->>App: Confirm success
+        App-->>User: Show success message
+    end
+```
+
+### Collection View Flow
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant Functions as Firebase Functions
+    participant Firestore as Firestore Database
+
+    User->>App: Navigate to Collection Screen
+    App->>Functions: Call get_user_data(userId)
+    Functions->>Firestore: Query user's plants
+    Firestore-->>Functions: Return plant data
+    Functions-->>App: Return plant collection
+    App->>App: Display plants in RecyclerView
+    App-->>User: Show plant collection
+```
+
+## Key Components
+
+### Mobile App
+1. **MainActivity**: The main entry point of the app that hosts the navigation components.
+2. **Authentication**:
+   - **SignInFragment**: Handles user login with email and password
+   - **SignUpFragment**: Handles user registration with email and password
+3. **Main Navigation**:
+   - **HomeFragment**: The home screen of the app
+   - **CameraFragment**: Handles camera integration and plant image capture
+   - **CollectionFragment**: Displays the user's plant collection
+   - **SettingsFragment**: Handles app settings
+4. **Collection**:
+   - **PlantListFragment**: Displays a list of the user's collected plants
+   - **PlantAdapter**: Adapts plant data for display in a RecyclerView
+5. **FirebaseHelper**: Utility class that handles interactions with Firebase services
+
+### Firebase Platform
+1. **Authentication**: Handles user registration, login, and session management
+2. **Storage**: Stores plant images uploaded by users
+3. **Cloud Functions**:
+   - **get_plant_families**: Downloads image from Storage, sends to Pl@ntNet API, returns plant information
+   - **store_plant_data**: Stores plant data in Firestore
+   - **get_user_images**: Retrieves all image URLs uploaded by a specific user
+   - **get_user_data**: Retrieves all plant data for a specific user
+4. **Firestore**: Stores user plant data including image URLs, location, and plant information
+
+### External Services
+1. **Pl@ntNet API**: Provides plant identification based on images
+2. **Location Services**: Provides geolocation data for plant sightings
+
+## Data Flow
+1. User takes a photo of a plant using the CameraFragment
+2. The image is uploaded to Firebase Storage
+3. The image URL is sent to the get_plant_families Cloud Function
+4. The function downloads the image and sends it to the Pl@ntNet API
+5. The API returns plant identification data
+6. The function returns the plant data to the app
+7. The app combines the plant data with location data
+8. The combined data is sent to the store_plant_data Cloud Function
+9. The function stores the data in Firestore
+10. When the user views their collection, the app calls the get_user_data function
+11. The function retrieves the plant data from Firestore
+12. The app displays the plant data in the PlantListFragment
+
+## Conclusion
+The LeafHunter app follows a modern mobile architecture with a clear separation of concerns. The app leverages Firebase services for backend operations and integrates with external APIs for plant identification. The architecture is designed to be scalable, maintainable, and provide a smooth user experience.
 
 
 
