@@ -1,8 +1,8 @@
-# 🖥️Sustainable Software Engineering App Development Roadmap🖥️
+# LeafHunter App
 
 Student project by Will Mitchell, Oskari Alaranta, and Kian Moloney. This project was done over the Spring Semester **Feb-May (2025)** for the class #COMP.SE.221-2024-2025-1 from *Tampere University*. All ideas and logs for the project will be found on this *ReadMe* with the inclusion of dates, and no edits to past ideas/structure/development, this is a prototype app.
 
-# 🚀Idea Development🚀
+## 🚀Idea Development🚀
 
  **2/5/2025** -- Our current idea was created by will to create a *pokemon-go like* app in which people take pictures of plants, and the app will be able to process there location and reward points/climbing/incentive system inside the app for taking pictures of more plants, and diverse species. There could be inclusion of AI recognizing plant technology if API and time permit. Heavy emphasis on the backend develop, implementations of a database system, caching, user authentication, and location API usage most likely through google. 
 
@@ -68,13 +68,13 @@ Will was finally able to get some work done, and played around with the UI eleme
 
 **5/29/2025** -- Everything mostly done, collection was completed and UI tweaked to mostly work, camera still need some small changes, but for the most part the app is functional!
 
-# 🌿 LeafHunter App Introduction
+## 🌿 LeafHunter App Introduction
 
-## 📌 Purpose
+### 📌 Purpose
 
 **LeafHunter** is an Android-based Pokémon GO-inspired app where users take pictures of plants to earn rewards. The app aims to turn users into **volunteer scientists**, contributing to ecological research by collecting valuable plant data.
 
-## ✨ Features
+### ✨ Features
 
 - 📷 Take pictures of plants and earn rewards
 - 🌱 AI-based plant identification (via Pl@ntNet API)
@@ -83,7 +83,7 @@ Will was finally able to get some work done, and played around with the UI eleme
 
 Future development idea: 🌍 Open API for researchers to access anonymized plant location data 
 
-## ⚙️ Technologies
+### ⚙️ Technologies
 
 - 📱 **OS**: Android
 - 🔥 **Firebase products**
@@ -97,13 +97,13 @@ Future development idea: 🌍 Open API for researchers to access anonymized plan
     - 🧬 Kotlin
     - 🐍 Python
 
-## 👥 Team Members
+### 👥 Team Members
 
 - **Will Mitchell** – UI & Design & Infrastructure
 - **Kian Moloney** – All things related to Firebase & Location & Authentication
 - **Oskari Alaranta** – Camera functionality
 
-## 💎 Chosen features from the given options in the assignment
+### 💎 Chosen features from the given options in the assignment
 
 - Basic features:
     - Database integration
@@ -121,14 +121,14 @@ Future development idea: 🌍 Open API for researchers to access anonymized plan
 Course: `#COMP.SE.221-2024-2025-1`
 
 
-# LeafHunter App - Architecture Documentation
+## LeafHunter App - Architecture Documentation
 
-## Overview
+### Overview
 LeafHunter is a mobile application that allows users to take pictures of plants, identify them using the Pl@ntNet API, and build a personal collection of identified plants with their locations. The app uses Firebase for authentication, storage, serverless functions, and database operations.
 
-## System Architecture
+### System Architecture
 
-### Components
+#### Components
 1. **Mobile App (Android)**
    - User Interface (Activities and Fragments)
    - Authentication (Sign In/Sign Up)
@@ -146,7 +146,7 @@ LeafHunter is a mobile application that allows users to take pictures of plants,
    - Pl@ntNet API - Plant identification service
    - Device Location Services - Provides geolocation data
 
-### Architecture Diagram
+#### Architecture Diagram
 ```mermaid
 graph TD
     %% Main Components
@@ -242,9 +242,9 @@ graph TD
     class User user;
 ```
 
-## Sequence Diagrams
+### Sequence Diagrams
 
-### Authentication Flow
+#### Authentication Flow
 ```mermaid
 sequenceDiagram
     participant User
@@ -271,7 +271,7 @@ sequenceDiagram
     end
 ```
 
-### Plant Identification Flow
+#### Plant Identification Flow
 ```mermaid
 sequenceDiagram
     participant User
@@ -309,7 +309,7 @@ sequenceDiagram
     end
 ```
 
-### Collection View Flow
+#### Collection View Flow
 ```mermaid
 sequenceDiagram
     participant User
@@ -326,9 +326,9 @@ sequenceDiagram
     App-->>User: Show plant collection
 ```
 
-## Key Components
+### Key Components
 
-### Mobile App
+#### Mobile App
 1. **MainActivity**: The main entry point of the app that hosts the navigation components.
 2. **Authentication**:
    - **SignInFragment**: Handles user login with email and password
@@ -343,7 +343,7 @@ sequenceDiagram
    - **PlantAdapter**: Adapts plant data for display in a RecyclerView
 5. **FirebaseHelper**: Utility class that handles interactions with Firebase services
 
-### Firebase Platform
+#### Firebase Platform
 1. **Authentication**: Handles user registration, login, and session management
 2. **Storage**: Stores plant images uploaded by users
 3. **Cloud Functions**:
@@ -353,11 +353,11 @@ sequenceDiagram
    - **get_user_data**: Retrieves all plant data for a specific user
 4. **Firestore**: Stores user plant data including image URLs, location, and plant information
 
-### External Services
+#### External Services
 1. **Pl@ntNet API**: Provides plant identification based on images
 2. **Location Services**: Provides geolocation data for plant sightings
 
-## Data Flow
+### Data Flow
 1. User takes a photo of a plant using the CameraFragment
 2. The image is uploaded to Firebase Storage
 3. The image URL is sent to the get_plant_families Cloud Function
@@ -371,7 +371,7 @@ sequenceDiagram
 11. The function retrieves the plant data from Firestore
 12. The app displays the plant data in the PlantListFragment
 
-## Conclusion
+### Conclusion
 The LeafHunter app follows a modern mobile architecture with a clear separation of concerns. The app leverages Firebase services for backend operations and integrates with external APIs for plant identification. The architecture is designed to be scalable, maintainable, and provide a smooth user experience.
 
 
