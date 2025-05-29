@@ -56,7 +56,9 @@ Will was finally able to get some work done, and played around with the UI eleme
 
 **3/25/2025** -- We decided to switch to a Firebase backend as it was the easiest to manage and control on a small scale and very easy for our pivot from the idea of MongoDB
 
-**4/5/2025**
+**4/5/2025** --  Spent a long time looking into transitioning the whole project from our legacy XML layout in android studio to jetpack compose, but ultimately unsuccessful
+
+**4/15/2025** -- Got the basica UI working and some of the backend including lots of the user login and password information, and authentication setup with Firebase
 ## Structure
 ```mermaid
 graph TD
