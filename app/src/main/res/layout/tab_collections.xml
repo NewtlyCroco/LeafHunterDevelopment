@@ -5,22 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@color/green_500">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/collectionsRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        android:orientation="vertical" />
-
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginBottom="16dp">
 
-        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,29 +39,28 @@
                 android:textSize="16sp"/>
         </LinearLayout>
 
-        <!-- Progress -->
         <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_marginHorizontal="8dp"
             app:trackColor="@color/green_700"
             app:trackThickness="4dp"
-            />
+            android:progress="75"/>
 
-        <!-- Plants Preview -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
 
-                <!-- Mini plant cards (reusing item_plant_collection but scaled down) -->
-
-                <!-- Complete Collection Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="120dp"
                     android:layout_height="160dp"
@@ -86,7 +79,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:text="Complete Collection"
                             android:textColor="@color/yellow"
                             android:textSize="14sp"
@@ -96,4 +88,13 @@
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
+
+    <!-- RecyclerView for list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"/>
 </LinearLayout>

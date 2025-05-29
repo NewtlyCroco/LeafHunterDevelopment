@@ -1,62 +1,40 @@
 package com.example.leafhunterdevelopment.ui.collection
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.leafhunterdevelopment.R
-import com.example.leafhunterdevelopment.databinding.FragmentCollectionBinding
-import com.google.android.material.tabs.TabLayoutMediator
 
 class CollectionFragment : Fragment() {
 
-    private var _binding: FragmentCollectionBinding? = null
-    private val binding get() = _binding!!
+    private val viewModel: CollectionViewModel by viewModels()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: PlantAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCollectionBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val root = inflater.inflate(R.layout.tab_collections, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        recyclerView = root.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Setup ViewPager with tabs
-        binding.viewPager.adapter = CollectionPagerAdapter(this)
+        // Then observe and update data
+        viewModel.plants.observe(viewLifecycleOwner, Observer { plantList ->
+            Log.d("CollectionsFragment", "Observed ${plantList.size} plants")
+            adapter = PlantAdapter(plantList) // OR better: use a mutable list and call adapter.notifyDataSetChanged()
+            recyclerView.adapter = adapter
+        })
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when(position) {
-                0 -> getString(R.string.tab_all_plants)
-                1 -> getString(R.string.tab_collections)
-                else -> ""
-            }
-        }.attach()
-
-        // FAB click listener
-        binding.fabAddPlant.setOnClickListener {
-            // Handle add new plant action
-        }
-    }
-
-    private inner class CollectionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 1
-
-        override fun createFragment(position: Int): Fragment {
-            return when(position) {
-                0 -> PlantListFragment()
-                else -> throw IllegalArgumentException("Invalid position")
-            }
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        return root
     }
 }
