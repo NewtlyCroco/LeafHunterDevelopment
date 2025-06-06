@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 
 class SettingsFragment : Fragment() {
 
@@ -54,7 +55,7 @@ class SettingsFragment : Fragment() {
         binding.signOutButton.setOnClickListener {
             it.startAnimation(bounce)
             auth.signOut()
-            // Navigate to login screen or handle sign out
+            findNavController().navigate(R.id.signInFragment)
         }
 
         // Clear Cache Button
