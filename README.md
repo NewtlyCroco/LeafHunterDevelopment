@@ -106,6 +106,10 @@ Course: `#COMP.SE.221-2024-2025-1`
 
 ### Signing in and signing up
 
+> ***NOTE:*** There is a freely available test user with plants in its collection  
+email: test@example.com  
+password: tester123
+
 When you first open the app, you are greeted with a sign in page. To create an account you can click the *Sign Up* button at the very bottom of the screen. There is no email verification, so you can enter any email and password combination, as long as you remember them.
 
 ![LeafHunter's signin page](assets/signin.png)
