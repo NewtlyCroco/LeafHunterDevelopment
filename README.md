@@ -102,6 +102,44 @@ Future development idea: 🌍 Open API for researchers to access anonymized plan
 **Tampere University – Spring 2025**  
 Course: `#COMP.SE.221-2024-2025-1`
 
+## User Guide
+
+### Signing in and signing up
+
+When you first open the app, you are greeted with a sign in page. To create an account you can click the *Sign Up* button at the very bottom of the screen. There is no email verification, so you can enter any email and password combination, as long as you remember them.
+
+![LeafHunter's signin page](assets/signin.png)
+
+### Navigating
+
+When you have signed in, there is a navigation bar at the bottom of the app. This can be used to navigate between different pages on the app.
+
+![LeafHunter's navigation bar](assets/navigation-bar.png)
+
+There are four pages available. They are *Home*, *Camera*, *Collection*, and *Settings* respectively.
+
+### Home page
+
+On the *Home* page you can find some statistics, news, and weekly highlights. These are not yet implemented, so they just show static information.
+
+### Camera page
+
+On the camera page you take the actual pictures. When you click the camera button, photo is captured and sent immediately to our firebase instance, which does plant recognition and saves the image with basic information (location, name, classification, timestamp) into our database. Plants in this database can be viewed on the *Collection* page.
+
+### Colleciton
+
+The collection page shows user the plants they have captured. Plants are queried from our database and shown in a list to the user.
+
+![LeafHunter's collection page](assets/collection.png)
+
+When the user takes a picture that is recognized as a plant, it will show up here.
+
+### Settings
+
+On the *Settings* page you can find two buttons. One for signing out and one for clearing the app cache.
+
+![LeafHunter's settings page](assets/settings.png)
+
 
 ## LeafHunter App - Architecture Documentation
 
